@@ -1,20 +1,24 @@
 
 
-# Sistema de informacion geografica
+# Sistema de Informacion Geografica
 
 ## Instalacion
 
 ### Quick start
 
-Install all dependencies:
+Teniendo nuestro entorno activado, instalar las dependencias:
 
     pip install -r requirements.txt
 
-Run migrations:
+Luego, teniendo la base de datos creada, migrar el modelo de datos.:
 
     python src/manage.py migrate
 
-### Detailed instructions
+Finalmente, para correr el API.
+
+    python src/manage.py runserver
+
+### Mas información
 
 Take a look at the docs for more information.
 
