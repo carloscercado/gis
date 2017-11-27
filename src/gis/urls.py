@@ -1,12 +1,12 @@
 from django.conf.urls import url, include
 from django.contrib import admin
 from rest_framework.documentation import include_docs_urls
-from territorios.views import EstadoRecurso
 from .enrrutador import RaizRouter
+from capas.views import CapasRecursos
 
 router = RaizRouter(trailing_slash=False)
 
-router.register(r'estados', EstadoRecurso)
+router.register("capas", CapasRecursos)
 
 urlpatterns = [
     url(r'^', include(router.urls)),

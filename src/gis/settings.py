@@ -14,9 +14,9 @@ SECRET_KEY = 'e*2n!dvk%g5_h_5x)=18l052_!4utghy6+$eg*z7*z9c9x-)c)'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*", "127.0.0.1"]
 
-
+CORS_ORIGIN_ALLOW_ALL = True
 # Application definition
 """
 AQUI PONEN LAS NUEVAS APLICACIONES, SI CREARAN UNA NUEVA.
@@ -29,10 +29,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'territorios.apps.TerritoriosConfig'
+    'corsheaders',
+    'django.contrib.gis',
+    'capas.apps.CapasConfig'
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -75,7 +78,7 @@ WSGI_APPLICATION = 'gis.wsgi.application'
 
 DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+            'ENGINE': 'django.contrib.gis.db.backends.postgis', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
             'NAME': 'gis',                      # Or path to database file if using sqlite3.
             # The following settings are not used with sqlite3:
             'USER': 'postgres',
