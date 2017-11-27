@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>KML Click Capture Sample</title>
+      <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+  </head>
+  <style>
+  #map {
+width: 100%;
+height: 500px;
+margin-top: 100px;
+}
+  </style>
+  <body>
+
+  <div>
+    <button type="button" onclick="add_capa('escuelas')">
+     capa de escuelas
+    </button>
+    <div id="map"></div>
+    </div>
+
+    <script>
+
+      var map;
+
+       function initMap() {
+        var myLatLng = {lng:-64.1492, lat:10.446388};
+
+        map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 13,
+          center: myLatLng
+        });
+
+
+      }
+
+      function add_capa(e){
+console.log(e)
+      jQuery.support.cors = true;
+        $.ajax ({
+        url: 'http://127.0.0.1:8000/capas/tipo=' + e,
+        datatype: "json",
+        success: function (datos) {
+          console.log(datos)
+          datos.forEach(function(e) {
+            console.log(e)
+
+            var punto = {lat: e.latitud , lng: e.longitud  }
+            var marker = new google.maps.Marker({
+            position: punto,
+            map: this.map,
+            title: e.description
+            });
+
+            });
+          }
+        })
+
+      }
+
+    </script>
+
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBrf7-bptiltPAV_HYf8c8kWENNW7tFN_0&callback=initMap">
+    </script>
+
+  </body>
+</html>
