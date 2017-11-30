@@ -1,18 +1,7 @@
 from django.contrib.gis.db import models
 from django.contrib.gis.geos.point import Point
-from django.contrib.gis.geos.collections import MultiPolygon
+from django.contrib.gis.geos.collections import MultiPolygon, MultiLineString
 from rest_framework.exceptions import ValidationError
-
-class Manager(models.Manager):
-
-    def get_queryset(self):
-        resultado = super(Manager, self).get_queryset().all()
-        for i in resultado:
-            dato_geografico = i.geom
-            if isinstance(dato_geografico, Point):
-                return resultado, Atributos.PUNTO
-            elif isinstance(dato_geografico, MultiPolygon):
-                return resultado, Atributos.POLIGONO_MULTIPLE
 
 class Capas(models.Model):
     nombre = models.CharField(max_length=30)
@@ -25,6 +14,7 @@ class Atributos(models.Model):
     TEXTO = 'TEXTO'
     ENTERO = 'ENTERO'
     FLOTANTE = 'FLOTANTE'
+    LINEA_MULTIPLE = 'LINEA_MULTIPLE'
 
     TIPO_CHOICES = (
         (PUNTO, PUNTO),
@@ -33,7 +23,8 @@ class Atributos(models.Model):
         (TEXTO, TEXTO),
         (ENTERO, ENTERO),
         (FLOTANTE, FLOTANTE),
-        (POLIGONO_MULTIPLE, POLIGONO_MULTIPLE)
+        (POLIGONO_MULTIPLE, POLIGONO_MULTIPLE),
+        (LINEA_MULTIPLE, LINEA_MULTIPLE)
     )
 
     capa = models.ForeignKey(Capas, on_delete=models.CASCADE,
@@ -53,23 +44,30 @@ def crear_modelo(nombre):
 
 def buscar_capa_y_atributos(nombre):
     try:
+        print("entro 1")
         capa = Capas.objects.filter(nombre=nombre).first()
         campos = {}
+        print(capa.nombre, capa.atributos.count())
         for attr in capa.atributos.all():
+            print(attr.nombre, attr.tipo)
             if attr.tipo == Atributos.TEXTO:
                 attr.tipo = models.CharField(max_length=255)
             elif attr.tipo == Atributos.ENTERO:
                 attr.tipo = models.IntegerField()
             elif attr.tipo == Atributos.FLOTANTE:
                 attr.tipo = models.FloatField()
-            elif attr.tipo == Atributos.PUNTO:
+            else:
+                attr.tipo = models.GeometryField()
+            '''elif attr.tipo == Atributos.PUNTO:
                 attr.tipo = models.PointField()
             elif attr.tipo == Atributos.POLIGONO_MULTIPLE:
                 attr.tipo = models.MultiPolygonField()
+            elif attr.tipo == Atributos.LINEA_MULTIPLE:
+                attr.tipo = models.MultiLineStringField()
+            '''
 
             campo = {
                 attr.nombre: attr.tipo,
-                "datos": Manager()
             }
             campos.update(campo)
         return campos

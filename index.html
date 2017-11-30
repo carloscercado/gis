@@ -1,71 +1,182 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
-    <meta charset="utf-8">
-    <title>KML Click Capture Sample</title>
-      <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-  </head>
-  <style>
-  #map {
-width: 100%;
-height: 500px;
-margin-top: 100px;
-}
-  </style>
-  <body>
 
-  <div>
-    <button type="button" onclick="add_capa('escuelas')">
-     capa de escuelas
-    </button>
-    <div id="map"></div>
-    </div>
+<head>
+    <title>GeoJSONLint - Validate your GeoJSON</title>
+    <meta name="keywords" content="GeoJSON Validation,GeoJSON Validator,GeoJSONLint,GeoJSON Lint,Validate GeoJSON">
+    <meta name="description" content="Validate your GeoJSON and display it on a map.">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js">
+    <link href='http://api.mapbox.com/mapbox.js/v2.4.0/mapbox.css' rel='stylesheet'>
+    <link rel="stylesheet" href="http://geojsonlint.com/static/css/app.css">
+    <link href='https://api.mapbox.com/mapbox.js/v3.1.1/mapbox.css' rel='stylesheet' />
 
+</head>
+
+<body>
     <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-      var map;
+      ga('create', 'UA-7385360-18', 'auto');
+      ga('send', 'pageview');
+    </script>
 
-       function initMap() {
-        var myLatLng = {lng:-64.1492, lat:10.446388};
+    <div class="container">
+        <div id="input-output" class="row">
+            <div class="col-sm-4 left full-height">
+      
+      
+                <div class="row-fluid text-centered"><a id="submit" data="hola" class="btn btn-primary btn-large btn-action">Mostrar Escuelas</a>
+                </div>
+<br/>
+                 <div class="row-fluid text-centered"><a id="submit2" data="hola" class="btn btn-primary btn-large btn-action">Mostrar Estados</a>
+                </div>
+<br/>
+                <div class="row-fluid text-centered"><a id="submit3" data="hola" class="btn btn-primary btn-large btn-action">Mostrar Parroquias</a>
+                </div>
+            </div>
+            <div class="col-sm-8 right full-height">
+                <div id="map-container" class="full-height"></div>
+            </div>
+        </div>
+    </div>
+   
+    <script
+              src="https://code.jquery.com/jquery-3.2.1.js"
+              integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
+              crossorigin="anonymous"></script>
 
-        map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 13,
-          center: myLatLng
-        });
 
 
-      }
+    <script src='https://api.mapbox.com/mapbox.js/v3.1.1/mapbox.js'></script>
+    <script src='http://geojsonlint.com/static/js/geojsonhint.js'></script>
 
-      function add_capa(e){
-console.log(e)
-      jQuery.support.cors = true;
-        $.ajax ({
-        url: 'http://127.0.0.1:8000/capas/tipo=' + e,
-        datatype: "json",
-        success: function (datos) {
-          console.log(datos)
-          datos.forEach(function(e) {
-            console.log(e)
+    <script src="http://geojsonlint.com/static/lib/bootstrap/js/bootstrap.min.js"></script>
+    <script>
+    (function() {
+  var map;
 
-            var punto = {lat: e.latitud , lng: e.longitud  }
-            var marker = new google.maps.Marker({
-            position: punto,
-            map: this.map,
-            title: e.description
-            });
+  $(document).ready(function() {
+    L.mapbox.accessToken = 'pk.eyJ1IjoiamNzYW5mb3JkIiwiYSI6InRJMHZPZFUifQ.F4DMGoNgU3r2AWLY0Eni-w';
+    map = L.mapbox.map('map-container', 'mapbox.light')
+    map.setView([10.45000010, -64.150000], 12.5);
 
-            });
+    var geojsonLayer = new L.GeoJSON(null, {
+      onEachFeature: function (feature, layer) {
+        if (feature.properties) {
+          var popupString = '<div class="popup">';
+          for (var k in feature.properties) {
+            var v = feature.properties[k];
+            popupString += k + ': ' + v + '<br />';
           }
-        })
-
+          popupString += '</div>';
+          layer.bindPopup(popupString, {
+            maxHeight: 200
+          });
+        }
       }
+    });
+
+    map.addLayer(geojsonLayer);
+
+    $('#submit').on('click',  function() {
+ 
+      $.get("http://127.0.0.1:8000/capas/tipo=escuelas", function( data ) {
+
+        var testJson = JSON.stringify(data);
+
+        geojsonLayer.addData(JSON.parse(testJson));
+        map.fitBounds(geojsonLayer.getBounds());
+       });
+    });
+
+     $('#submit2').on('click',  function() {
+ 
+      $.get("http://127.0.0.1:8000/capas/tipo=estados", function( data ) {
+
+        var testJson = JSON.stringify(data);
+
+        geojsonLayer.addData(JSON.parse(testJson));
+        map.fitBounds(geojsonLayer.getBounds());
+       });
+    });
+
+ $('#submit3').on('click',  function() {
+ 
+      $.get("http://127.0.0.1:8000/capas/tipo=parroquias", function( data ) {
+
+        var testJson = JSON.stringify(data);
+
+        geojsonLayer.addData(JSON.parse(testJson));
+        map.fitBounds(geojsonLayer.getBounds());
+       });
+    });
+
+
+    $('#clear').on('click', function() {
+      $('#geojson-input').val('');
+    });
+
+    $('.modal-close').on('click', function(event) {
+      event.preventDefault();
+      $('#' + $(this).attr('id').split('-close')[0]).modal('hide');
+    });
+
+    $('a[data-toggle="tab"]').on('shown', function(event) {
+      showGeoJsonSample($(event.target).attr('data-geojson-type'));
+      $('#submit').trigger('click');
+    });
+
+    if (window.File && window.FileReader) {
+      $('#geojson-input').on('dragenter', function (event) {
+        showDroppable();
+        event.preventDefault();
+      });
+
+      $('#geojson-input').on('dragleave', function (event) {
+        hideDroppable();
+        event.preventDefault();
+      });
+
+      $('#geojson-input').on('dragover', function (event) {
+        event.preventDefault();
+      });
+
+      $('#geojson-input').on('drop', function (event) {
+        event.preventDefault();
+
+        hideDroppable();
+
+        var dt = event.originalEvent.dataTransfer,
+          files = dt.files,
+          types = dt.types;
+
+        if (files) {
+          var file = files[0];
+
+          if (file.name.indexOf('.json') !== -1 || file.name.indexOf('.geojson') !== -1) {
+            var reader = new FileReader();
+
+            reader.onload = function () {
+              $('#geojson-input').val(reader.result);
+            };
+
+            reader.readAsText(file);
+          }
+        }
+      });
+    }
+
+    showGeoJsonSample('Point');
+
+  });
+}());
 
     </script>
-
-    <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBrf7-bptiltPAV_HYf8c8kWENNW7tFN_0&callback=initMap">
-    </script>
-
-  </body>
+</body>
+<!-- Hello World -->
 </html>

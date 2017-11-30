@@ -22,15 +22,20 @@ class CapaSerializador(serializers.ModelSerializer):
         fields = ("id", "nombre", "atributos")
 
 class PuntoSerializador(serializers.ModelSerializer):
-    longitud = serializers.FloatField(source="geom.x", required=False)
-    latitud = serializers.FloatField(source="geom.y", required=False)
-    tipo = serializers.CharField(required=False)
+    geo = serializers.JSONField(source="geom.json", required=False)
     class Meta:
         model = Capas
         exclude = ("geom",)
 
 class PoligonoSerializador(serializers.ModelSerializer):
     poligono = serializers.CharField(source="geom.json", required=False)
+    tipo = serializers.CharField(required=False)
+    class Meta:
+        model = Capas
+        exclude = ("geom",)
+
+class LineaSerializador(serializers.ModelSerializer):
+    lineas = serializers.JSONField(required=False)
     tipo = serializers.CharField(required=False)
     class Meta:
         model = Capas
