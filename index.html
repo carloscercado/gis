@@ -2,48 +2,71 @@
 <html>
 
 <head>
-    <title>GeoJSONLint - Validate your GeoJSON</title>
-    <meta name="keywords" content="GeoJSON Validation,GeoJSON Validator,GeoJSONLint,GeoJSON Lint,Validate GeoJSON">
+    <title>Sistema de prevencion</title>
+    <meta name="keywords">
     <meta name="description" content="Validate your GeoJSON and display it on a map.">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js">
     <link href='http://api.mapbox.com/mapbox.js/v2.4.0/mapbox.css' rel='stylesheet'>
-    <link rel="stylesheet" href="http://geojsonlint.com/static/css/app.css">
+    <style>
+    body {
+  padding-bottom: 40px; }
+
+    #map-container {
+        height: 500px;
+        width:  100%;
+    }
+
+.full-height {
+  height: 100%; }
+
+.text-centered {
+  text-align: center; }
+
+#logo{
+    width: 40px;
+    height: 20px
+}
+    </style>
     <link href='https://api.mapbox.com/mapbox.js/v3.1.1/mapbox.css' rel='stylesheet' />
 
 </head>
 
 <body>
-    <script>
-      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-      ga('create', 'UA-7385360-18', 'auto');
-      ga('send', 'pageview');
-    </script>
-
-    <div class="container">
-        <div id="input-output" class="row">
-            <div class="col-sm-4 left full-height">
-      
-      
-                <div class="row-fluid text-centered"><a id="submit" data="hola" class="btn btn-primary btn-large btn-action">Mostrar Escuelas</a>
-                </div>
-<br/>
-                 <div class="row-fluid text-centered"><a id="submit2" data="hola" class="btn btn-primary btn-large btn-action">Mostrar Estados</a>
-                </div>
-<br/>
-                <div class="row-fluid text-centered"><a id="submit3" data="hola" class="btn btn-primary btn-large btn-action">Mostrar Parroquias</a>
-                </div>
-            </div>
-            <div class="col-sm-8 right full-height">
-                <div id="map-container" class="full-height"></div>
-            </div>
-        </div>
+    <nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">
+      <img SRC="./front/logo.png" id="logo"></a>
     </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li class="active"><a id="submit" href="#">Escuelas<span class="sr-only">(current)</span></a></li>
+        <li><a href="#" id="submit3">Parroquias</a></li>
+        <li><a href="#" id="submit2">Estados</a></li>
+       
+      </ul>
+      
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#">Usuario</a></li>
+
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+                <div id="map-container" class="full-height"></div>
+
    
     <script
               src="https://code.jquery.com/jquery-3.2.1.js"
@@ -67,6 +90,8 @@
 
     var geojsonLayer = new L.GeoJSON(null, {
       onEachFeature: function (feature, layer) {
+
+
         if (feature.properties) {
           var popupString = '<div class="popup">';
           for (var k in feature.properties) {
@@ -82,6 +107,10 @@
     });
 
     map.addLayer(geojsonLayer);
+
+    
+
+
 
     $('#submit').on('click',  function() {
  
