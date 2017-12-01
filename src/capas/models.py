@@ -44,12 +44,9 @@ def crear_modelo(nombre):
 
 def buscar_capa_y_atributos(nombre):
     try:
-        print("entro 1")
         capa = Capas.objects.filter(nombre=nombre).first()
         campos = {}
-        print(capa.nombre, capa.atributos.count())
         for attr in capa.atributos.all():
-            print(attr.nombre, attr.tipo)
             if attr.tipo == Atributos.TEXTO:
                 attr.tipo = models.CharField(max_length=255)
             elif attr.tipo == Atributos.ENTERO:
