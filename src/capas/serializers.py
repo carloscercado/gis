@@ -8,17 +8,36 @@ class AtributoSerializador(serializers.ModelSerializer):
         model = Atributos
         fields = ("id", "nombre", "tipo","descripcion", )
 
+class CategoriasSerializador(serializers.ModelSerializer):  
+    class Meta: 
+        model = Categoria
+        fields = ("id","nombre","descripcion","eliminable")
+
+
+    def  create(self, datos):
+        categoria = Categoria.objects.create(**datos)
+        return categoria
+            
+
+    def update(self, instance, datos):
+        instance.nombre = datos.get('nombre') 
+        instance.descripcion = datos.get('descripcion') 
+        instance.save()                
+        return instance
+
 class CapaListSerializador(serializers.ModelSerializer):
     detalle = serializers.HyperlinkedIdentityField(view_name='capas-detail', format='html')
+    categoria = CategoriasSerializador()
+    atributos = AtributoSerializador(many=True)
     class Meta:
         model = Capas
-        fields = ("id", "nombre", "detalle")
+        fields = ("id", "nombre", "categoria", "atributos", "detalle")
 
 class CapaSerializador(serializers.ModelSerializer):
     atributos = AtributoSerializador(many=True)
     class Meta:
         model = Capas
-        fields = ("id", "nombre", "atributos")
+        fields = ("id", "nombre","categoria", "atributos")
 
     def create(self, datos):
         attr = datos.pop("atributos")
@@ -48,22 +67,5 @@ class CategoriasListSerializador(serializers.ModelSerializer):
     class Meta:
           model = Categoria
           fields = ("id","nombre","detalle", "descripcion", "eliminable", "capas")  
-
-class CategoriasSerializador(serializers.ModelSerializer):  
-    class Meta: 
-        model = Categoria
-        fields = ("id","nombre","descripcion","eliminable")
-
-
-    def  create(self, datos):
-        categoria = Categoria.objects.create(**datos)
-        return categoria
-            
-
-    def update(self, instance, datos):
-        instance.nombre = datos.get('nombre') 
-        instance.descripcion = datos.get('descripcion') 
-        instance.save()                
-        return instance
 
 
