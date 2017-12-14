@@ -3,8 +3,18 @@ from django.contrib.gis.geos.point import Point
 from django.contrib.gis.geos.collections import MultiPolygon, MultiLineString
 from rest_framework.exceptions import ValidationError
 
+class Categoria(models.Model):
+    nombre =  models.CharField(max_length=30, unique=True)
+    descripcion =  models.CharField(max_length=80, null=True)
+
+    @property
+    def eliminable(self):
+        return not self.capas.all().exists()
+
 class Capas(models.Model):
     nombre = models.CharField(max_length=30)
+    categoria = models.ForeignKey(Categoria, null=True, related_name="capas",
+                                  on_delete=models.CASCADE)
 
 class Atributos(models.Model):
     PUNTO = 'Point'
