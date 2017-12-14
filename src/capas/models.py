@@ -7,14 +7,15 @@ class Capas(models.Model):
     nombre = models.CharField(max_length=30)
 
 class Atributos(models.Model):
-    PUNTO = 'PUNTO'
-    POLIGONO = 'POLIGONO'
-    POLIGONO_MULTIPLE = 'POLIGONO_MULTIPLE'
-    LINEA = 'LINEA'
-    TEXTO = 'TEXTO'
-    ENTERO = 'ENTERO'
-    FLOTANTE = 'FLOTANTE'
-    LINEA_MULTIPLE = 'LINEA_MULTIPLE'
+    PUNTO = 'Point'
+    POLIGONO = 'Polygon'
+    POLIGONO_MULTIPLE = 'MultiPolygon'
+    PUNTO_MULTIPLE = 'MultiPoint'
+    LINEA = 'LineString'
+    TEXTO = 'Text'
+    ENTERO = 'Int'
+    FLOTANTE = 'Float'
+    LINEA_MULTIPLE = 'MultiLineString'
 
     TIPO_CHOICES = (
         (PUNTO, PUNTO),
@@ -31,7 +32,7 @@ class Atributos(models.Model):
                              related_name='atributos')
     nombre = models.CharField(max_length=30)
     tipo = models.CharField(max_length=30, choices=TIPO_CHOICES)
-    descripcion = models.CharField(max_length=80)
+    descripcion = models.CharField(max_length=80, null=True)
 
 def crear_modelo(nombre):
     opciones = {
@@ -53,20 +54,11 @@ def buscar_capa_y_atributos(nombre):
                 attr.tipo = models.IntegerField()
             elif attr.tipo == Atributos.FLOTANTE:
                 attr.tipo = models.FloatField()
-            else:
-                attr.tipo = models.GeometryField()
-            '''elif attr.tipo == Atributos.PUNTO:
-                attr.tipo = models.PointField()
-            elif attr.tipo == Atributos.POLIGONO_MULTIPLE:
-                attr.tipo = models.MultiPolygonField()
-            elif attr.tipo == Atributos.LINEA_MULTIPLE:
-                attr.tipo = models.MultiLineStringField()
-            '''
-
             campo = {
                 attr.nombre: attr.tipo,
             }
             campos.update(campo)
+        campos.update({"geom": models.GeometryField()})
         return campos
     except Exception as e:
         print(e)

@@ -65,6 +65,15 @@
   </div><!-- /.container-fluid -->
 </nav>
 
+<form method="post" enctype="multipart/form-data" action="http://127.0.0.1:8000/importar">
+ <div>
+   <label for="file">Choose file to upload</label>
+   <input type="file" id="file" name="file" multiple>
+ </div>
+ <div>
+   <button>Submit</button>
+ </div>
+</form>
                 <div id="map-container" class="full-height"></div>
 
    
@@ -125,7 +134,7 @@
 
      $('#submit2').on('click',  function() {
  
-      $.get("http://127.0.0.1:8000/capas/tipo=estados", function( data ) {
+      $.get("http://127.0.0.1:8000/capas/tipo=test", function( data ) {
 
         var testJson = JSON.stringify(data);
 
