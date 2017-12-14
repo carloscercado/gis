@@ -17,6 +17,10 @@ DEBUG = True
 ALLOWED_HOSTS = ["*", "127.0.0.1"]
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+FILE_UPLOAD_HANDLERS = {
+    'django.core.files.uploadhandler.TemporaryFileUploadHandler',
+}
 # Application definition
 """
 AQUI PONEN LAS NUEVAS APLICACIONES, SI CREARAN UNA NUEVA.
