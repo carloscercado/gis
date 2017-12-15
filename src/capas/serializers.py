@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Capas, Atributos, Categoria
+from capas.capa import CapaImporter
 
 
 class AtributoSerializador(serializers.ModelSerializer):
@@ -8,8 +9,9 @@ class AtributoSerializador(serializers.ModelSerializer):
         model = Atributos
         fields = ("id", "nombre", "tipo","descripcion", )
 
-class CategoriasSerializador(serializers.ModelSerializer):  
-    class Meta: 
+
+class CategoriaSerializador(serializers.ModelSerializer):
+    class Meta:
         model = Categoria
         fields = ("id","nombre","descripcion","eliminable")
 
@@ -17,21 +19,22 @@ class CategoriasSerializador(serializers.ModelSerializer):
     def  create(self, datos):
         categoria = Categoria.objects.create(**datos)
         return categoria
-            
 
     def update(self, instance, datos):
-        instance.nombre = datos.get('nombre') 
-        instance.descripcion = datos.get('descripcion') 
-        instance.save()                
+        instance.nombre = datos.get('nombre')
+        instance.descripcion = datos.get('descripcion')
+        instance.save()
         return instance
+
 
 class CapaListSerializador(serializers.ModelSerializer):
     detalle = serializers.HyperlinkedIdentityField(view_name='capas-detail', format='html')
-    categoria = CategoriasSerializador()
+    categoria = CategoriaSerializador()
     atributos = AtributoSerializador(many=True)
     class Meta:
         model = Capas
         fields = ("id", "nombre", "categoria", "atributos", "detalle")
+
 
 class CapaSerializador(serializers.ModelSerializer):
     atributos = AtributoSerializador(many=True)
@@ -43,6 +46,8 @@ class CapaSerializador(serializers.ModelSerializer):
         attr = datos.pop("atributos")
         obj =  Capas.objects.create(**datos)
         self.registrar_atributos(obj, attr)
+        importer = CapaImporter(None, obj.nombre.replace(" ", ""))
+        importer.desde_tabla(obj)
         return obj
 
     def registrar_atributos(self, obj, attr):
@@ -58,14 +63,11 @@ class CapaSerializador(serializers.ModelSerializer):
         self.registrar_atributos(instance, attr)
         instance.save()
         return instance
-        
 
 
-class CategoriasListSerializador(serializers.ModelSerializer):
+class CategoriaListSerializador(serializers.ModelSerializer):
     detalle = serializers.HyperlinkedIdentityField(view_name='categoria-detail', format='html')
     capas = CapaListSerializador(many=True)
     class Meta:
-          model = Categoria
-          fields = ("id","nombre","detalle", "descripcion", "eliminable", "capas")  
-
-
+        model = Categoria
+        fields = ("id","nombre","detalle", "descripcion", "eliminable", "capas")
