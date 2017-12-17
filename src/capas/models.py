@@ -13,7 +13,7 @@ class Categoria(models.Model):
 
 class Capas(models.Model):
     nombre = models.CharField(max_length=30)
-    categoria = models.ForeignKey(Categoria, null=True, related_name="capas",
+    categoria = models.ForeignKey(Categoria, related_name="capas",
                                   on_delete=models.CASCADE)
 
 class Atributos(models.Model):

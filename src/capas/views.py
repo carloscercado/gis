@@ -3,14 +3,15 @@ from .models import Capas, crear_modelo, Categoria
 from rest_framework.decorators import list_route
 from rest_framework.response import Response
 from django.contrib.gis.db import models
-from .serializers import CategoriaSerializador, CategoriaListSerializador,\
-                         CapaSerializador, CapaListSerializador
+from .serializadores import CategoriaSerializador, CapaSerializador, \
+                            CapaListSerializador, CategoriaListSerializador
 import pygeoj
 from rest_framework.exceptions import ValidationError
 from django.core.serializers import serialize
 from rest_framework.parsers import FormParser, MultiPartParser
 from .capa import CapaImporter
 from django.db import connection
+from django.db.backends.base.schema import BaseDatabaseSchemaEditor
 
 
 class CapasRecursos(viewsets.ModelViewSet):
@@ -43,17 +44,14 @@ class ImportarRecurso(viewsets.ViewSet):
     parser_classes = (MultiPartParser, FormParser,)
 
     def create(self, request, *args, **kwargs):
-        try:
-            _file = self.request.data.get('file')
-            geo = pygeoj.load(_file.fileno())
-            nombre = _file.name.replace('.geojson', '')
-            importer = CapaImporter(geo, nombre)
-            importer.importar_tabla()
-            connection.commit()
-            return Response()
-        except Exception as e:
-            connection.rollback()
-            raise ValidationError(str(e))
+        _file = self.request.data.get('file')
+        nombre = self.request.data.get("nombre")
+        categoria = self.request.data.get("categoria")
+        geo = pygeoj.load(_file.fileno())
+        importer = CapaImporter(geo, nombre, categoria)
+        importer.importar_tabla()
+        connection.commit()
+        return Response()
 
 class CategoriaRecursos(viewsets.ModelViewSet):
     queryset = Categoria.objects.all()
